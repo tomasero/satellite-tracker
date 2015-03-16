@@ -1,4 +1,4 @@
-#SatelliteTracke
+#SatelliteTracker
 - Filters visible satellites in the next 24 hours
 
 ---

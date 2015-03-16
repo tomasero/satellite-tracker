@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 import requests, json, ephem, subprocess, sys, crython
 from time import strftime, localtime
 from datetime import datetime, timedelta
@@ -10,12 +10,12 @@ my_lat = '51.5033630'
 my_lon = '-0.1276250'
 
 satellite_bodies = {}
+TLE_array = {}
 
 @crython.job(expr='@daily')
 def query_satellites():
 	resp = requests.get(url).content
 	resp = map(str.strip, resp.split('\r\n'))
-	TLE_array = {}
 	for i in xrange(0, len(resp)-1, 3):
 		TLE_array[resp[i]] = resp[i:i+3]
 	#bodies
@@ -27,6 +27,7 @@ def query_satellites():
 @app.route('/', methods=['GET'])
 def hello_world():
 	#observer
+	query_satellites()
 	obs = ephem.Observer()
 	obs.lat, obs.lon = my_lat, my_lon
 	obs.date = strftime("%Y-%m-%d %H:%M:%S", localtime())
@@ -38,18 +39,14 @@ def hello_world():
 		rise_time = info[0].datetime()
 		if (rise_time != None) and (rise_time > datetime.now()) and (rise_time < datetime.now() + timedelta(hours=24)):
 			visible.append(key)
-	
-
-	p = subprocess.Popen(["perl", "tle2edb.pl"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+	EDB = {}
 	for sat in visible:
-		tle = '\r\n'.join(TLE_array[sat])
-		##pipe.stdin.write(tle)
-		##print sys.stdin.read()
-		output, unused = p.communicate(tle)
-		print output
-	pipe.stdin.close()
-
+		TLE = TLE_array[sat]
+		EDB[sat] = subprocess.check_output(['./tle2edb.py', TLE[0], TLE[1], TLE[2]]).strip()
+	response = jsonify(EDB)
+	response.status_code = 200
+	return response
 
 if __name__ == '__main__':
-	app.run(debug=True)
 	crython.tab.start()
+	app.run(debug=True)
