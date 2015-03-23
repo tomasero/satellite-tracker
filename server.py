@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request
 import requests, json, ephem, subprocess, sys, crython
 from time import strftime, localtime
 from datetime import datetime, timedelta
+# from flask_restful import reqparse
+
 app = Flask(__name__)
 
 url = 'http://celestrak.com/NORAD/elements/visual.txt'
@@ -22,19 +24,18 @@ def query_satellites():
 	for sat, TLE in TLE_array.iteritems():
 		satellite_bodies[sat] = ephem.readtle(TLE[0], TLE[1], TLE[2])
 
-
-
 @app.route('/get_satellites_locations', methods=['POST'])
 def get_satellites_locations():
+	# data = request.data
 	print('-------------------')
-	data = json.loads(request.data)
-	print(data)
-	print(data['latitude'])
+	return request.json
+	# print(data)
+	# print(data['latitude'])
 	# print(request.get_json(force=True))
 	# print jsonify(request.data)['latitude']
-	req_latitude = request.data['latitude']
-	req_longitude = request.data['longitude']
-	req_time = request.data['time']
+	# req_latitude = request.data['latitude']
+	# req_longitude = request.data['longitude']
+	# req_time = request.data['time']
 	# print req_latitude, req_longitude, req_time
 	# return request.args
 	# #observer
