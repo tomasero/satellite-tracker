@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 import requests, json, ephem, subprocess, sys, crython
 from time import strftime, localtime
 from datetime import datetime, timedelta
-# from flask_restful import reqparse
 
 app = Flask(__name__)
 
@@ -26,18 +25,12 @@ def query_satellites():
 
 @app.route('/get_satellites_locations', methods=['POST'])
 def get_satellites_locations():
-	# data = request.data
+	params = request.form
 	print('-------------------')
-	return request.json
-	# print(data)
-	# print(data['latitude'])
-	# print(request.get_json(force=True))
-	# print jsonify(request.data)['latitude']
-	# req_latitude = request.data['latitude']
-	# req_longitude = request.data['longitude']
-	# req_time = request.data['time']
-	# print req_latitude, req_longitude, req_time
-	# return request.args
+	latitude = params['latitude']
+	longitude = params['longitude']
+	time = params['time']
+	print latitude, longitude, time
 	# #observer
 	# query_satellites()
 	# obs = ephem.Observer()
