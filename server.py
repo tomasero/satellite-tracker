@@ -46,11 +46,17 @@ def get_satellites_locations():
 		rise_time = info[0].datetime()
 		if (rise_time != None) and (rise_time > datetime.now()) and (rise_time < datetime.now() + timedelta(hours=24)):
 			visible.append(key)
-	EDB = {}
+	response_objs = []
 	for sat in visible:
 		TLE = TLE_array[sat]
-		EDB[sat] = subprocess.check_output(['./tle2edb.py', TLE[0], TLE[1], TLE[2]]).strip()
-	response = jsonify(EDB)
+		EDB = subprocess.check_output(['./tle2edb.py', TLE[0], TLE[1], TLE[2]]).strip()
+		obj = {
+			"satellide_id": TLE[1][2:7],
+			"satellite_name": sat,
+			"edb": EDB
+		}
+		response_objs.append(obj)
+	response = jsonify({'objects': response_objs})
 	response.status_code = 200
 	return response
 
