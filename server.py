@@ -8,12 +8,11 @@ app = Flask(__name__)
 
 url = 'http://celestrak.com/NORAD/elements/visual.txt'
 
-my_lat = '51.5033630'
-my_lon = '-0.1276250'
-
 satellite_bodies = {}
 TLE_array = {}
 
+#how to test cronjob?
+#should I run query_satellites once when server is up?
 @crython.job(expr='@daily')
 def query_satellites():
 	resp = requests.get(url).content
@@ -79,6 +78,11 @@ def get_visible_satellites(obs):
 	for key, body in satellite_bodies.iteritems():
 		info = obs.next_pass(body)
 		rise_time = info[0].datetime()
+
+		#1 rise within 24
+		#2 rise before and end before the 24 hours
+		#3 rise before and sets after
+
 		if (rise_time != None) and (rise_time > datetime.now()) and (rise_time < datetime.now() + timedelta(hours=24)):
 			visible.append(key)
 	return visible
