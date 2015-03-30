@@ -49,10 +49,10 @@ def get_satellites_locations():
 	visible = get_visible_satellites(obs)
 
 	if not visible:
-		message = {'status': 420,
+		message = {'status': 200,
 					'error': 'No visible satellites available.'}
 		response = jsonify(message)
-		response.status_code = 420
+		response.status_code = 200
 		return response
 
 	response_objs = get_formatted_response(visible)

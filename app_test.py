@@ -52,7 +52,8 @@ class FlaskTestCase(unittest.TestCase):
                 longitude = '-122.262247',
                 time = time
             ), follow_redirects=True);
-        self.assertEqual(response.status_code, 420)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.data)['error'], 'No visible satellites available.')
 
 
     # def test_missing_params(self):
